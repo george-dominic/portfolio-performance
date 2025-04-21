@@ -1,7 +1,7 @@
 from main import run_snapshot
 import resend
 import datetime as dt
-from config import RESEND_API_KEY
+from config import RESEND_API_KEY, FROM_EMAIL, TO_EMAIL
 from news import get_news
 from bs4 import BeautifulSoup
 from ai_summary import summarize
@@ -351,8 +351,8 @@ def run_email():
     try:
         resend.Emails.send(
             {
-                "from": "portfolio@georgedominic.com",
-                "to": "georgedominicv@gmail.com",
+                "from": FROM_EMAIL,
+                "to": TO_EMAIL,
                 "subject": subject,
                 "html": email_content,
             }
