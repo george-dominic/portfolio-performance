@@ -47,7 +47,6 @@ A lightweight, automated analytics pipeline to track and understand your equity 
    - download from [https://ollama.com](https://ollama.com)
 
 3. **Download an LLM (LLaMA 3.2)**  
-   - Example:
      ```bash
      ollama run llama3.2
      ```
