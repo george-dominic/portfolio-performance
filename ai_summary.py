@@ -16,7 +16,7 @@ def summarize(text):
     4. Notable sector performance
     5. Any significant impact factors
     
-    Keep the summary under 100 words and maintain a casual, witty tone. Just respond with summary and nothing else"""
+    Keep the summary under 120 words and maintain a casual, witty tone. Just respond with summary and nothing else"""
 
     response = client.chat(model=model, messages=[{"role": "user", "content": prompt}])
 

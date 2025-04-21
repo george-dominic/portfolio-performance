@@ -7,7 +7,6 @@ from bs4 import BeautifulSoup
 from ai_summary import summarize
 import traceback
 
-
 def prepare_email_data():
     holdings, sector_returns, portfolio_return, nifty_return = run_snapshot()
     news = get_news()
@@ -133,8 +132,6 @@ def prepare_email_data():
 
     summary = get_ai_summary(draft_email, news)
     summary = summary.strip('"')
-    # print(summary)
-    # print("Done")
 
     email_content = f"""
     <html>
@@ -351,14 +348,17 @@ def run_email():
     # Send email using Resend
     resend.api_key = RESEND_API_KEY
 
-    resend.Emails.send(
-        {
-            "from": "portfolio@georgedominic.com",
-            "to": "georgedominicv@gmail.com",
-            "subject": subject,
-            "html": email_content,
-        }
-    )
+    try:
+        resend.Emails.send(
+            {
+                "from": "portfolio@georgedominic.com",
+                "to": "georgedominicv@gmail.com",
+                "subject": subject,
+                "html": email_content,
+            }
+        )
+    except Exception as e:
+        print("Resend not working :",e)
 
 
 if __name__ == "__main__":
