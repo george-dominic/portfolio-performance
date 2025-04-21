@@ -5,28 +5,31 @@ import pandas as pd
 import json
 from config import MARKETAUX_API_KEY
 
+
 def get_news():
-    conn = http.client.HTTPSConnection('api.marketaux.com')
+    conn = http.client.HTTPSConnection("api.marketaux.com")
 
-    params = urllib.parse.urlencode({
-        'api_token': MARKETAUX_API_KEY,
-        'symbols': '^NSEI',
-        'limit': 3,
-    })
+    params = urllib.parse.urlencode(
+        {
+            "api_token": MARKETAUX_API_KEY,
+            "symbols": "^NSEI",
+            "limit": 3,
+        }
+    )
 
-    conn.request('GET', '/v1/news/all?{}'.format(params))
+    conn.request("GET", "/v1/news/all?{}".format(params))
 
     res = conn.getresponse()
     data = res.read()
-    data = data.decode('utf-8')
+    data = data.decode("utf-8")
 
     # Parse the JSON response
     json_data = json.loads(data)
 
     # Check if the response contains news data
-    if 'data' in json_data:
+    if "data" in json_data:
         # Create a DataFrame from the news data
-        df = pd.DataFrame(json_data['data'])
+        df = pd.DataFrame(json_data["data"])
         news_string = ""
         # Select and display relevant columns
         if not df.empty:
@@ -38,6 +41,6 @@ def get_news():
         else:
             print("No news articles found.")
     else:
-        print("Error in API response:", json_data.get('error', 'Unknown error'))
+        print("Error in API response:", json_data.get("error", "Unknown error"))
 
     return news_string

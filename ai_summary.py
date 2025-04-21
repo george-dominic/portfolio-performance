@@ -1,9 +1,7 @@
 import ollama
 
 
-
 def summarize(text):
-    
     client = ollama.Client()
 
     model = "llama3.2"
@@ -19,15 +17,7 @@ def summarize(text):
     5. Any significant impact factors
     
     Keep the summary under 100 words and maintain a casual, witty tone. Just respond with summary and nothing else"""
-    
-    response = client.chat(
-        model=model,
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
-    )
-    
-    return response['message']['content']
+
+    response = client.chat(model=model, messages=[{"role": "user", "content": prompt}])
+
+    return response["message"]["content"]

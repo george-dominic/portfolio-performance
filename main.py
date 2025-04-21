@@ -7,8 +7,8 @@ from auth_handler import setup_auth_server
 from token_manager import save_token, get_token, is_token_valid
 import warnings
 import os
-warnings.filterwarnings('ignore')
 
+warnings.filterwarnings("ignore")
 
 
 def authenticate_kite():
@@ -17,7 +17,7 @@ def authenticate_kite():
 
     # Check if we have a valid token for today
     if is_token_valid():
-        print("Using existing token for today...") 
+        print("Using existing token for today...")
         kite.set_access_token(get_token())
     else:
         print("No valid token found. Starting new authentication...")
@@ -60,8 +60,9 @@ def get_portfolio():
             "average_price",
         ]
     ]
-    holdings.to_csv('holdings.csv',index=False)
+    holdings.to_csv("holdings.csv", index=False)
     return holdings
+
 
 def get_yf_data(holdings):
     # Create empty lists to store data
@@ -69,26 +70,26 @@ def get_yf_data(holdings):
     day_changes = []
     mtd_returns = []
     day_changes_pct = []
-    
+
     # Iterate through each trading symbol
-    for symbol in holdings['tradingsymbol']:
+    for symbol in holdings["tradingsymbol"]:
         try:
             # Add .NS for NSE stocks
             ticker = yf.Ticker(f"{symbol}.NS")
             # Get 2 days of data for day change and month-to-date data
             hist = ticker.history(period="1mo")  # Get 1 month of data
-            
+
             if len(hist) >= 2:
                 # Get close price and calculate day change
-                close_price = hist['Close'].iloc[-1]
-                prev_close = hist['Close'].iloc[-2]
+                close_price = hist["Close"].iloc[-1]
+                prev_close = hist["Close"].iloc[-2]
                 day_change = close_price - prev_close
                 day_change_pct = day_change / prev_close
-                
+
                 # Calculate month-to-date return
-                month_start_price = hist['Close'].iloc[0]
+                month_start_price = hist["Close"].iloc[0]
                 mtd_return = (close_price - month_start_price) / month_start_price
-                
+
                 close_prices.append(close_price)
                 day_changes.append(day_change)
                 day_changes_pct.append(day_change_pct)
@@ -98,23 +99,21 @@ def get_yf_data(holdings):
                 day_changes.append(None)
                 day_changes_pct.append(None)
                 mtd_returns.append(None)
-                
+
         except Exception as e:
             print(f"Error getting data for {symbol}: {str(e)}")
             close_prices.append(None)
             day_changes.append(None)
             mtd_returns.append(None)
             day_changes_pct.append(None)
-    
+
     # Add the data to holdings dataframe
-    holdings['close_price'] = close_prices
-    holdings['day_change'] = day_changes
-    holdings['mtd_return'] = mtd_returns
-    holdings['day_change_pct'] = day_changes_pct
-    
+    holdings["close_price"] = close_prices
+    holdings["day_change"] = day_changes
+    holdings["mtd_return"] = mtd_returns
+    holdings["day_change_pct"] = day_changes_pct
+
     return holdings
-
-
 
 
 def calculate_portfolio_return(holdings):
@@ -137,13 +136,6 @@ def calculate_portfolio_return(holdings):
     # Return vs Weight Delta
     holdings["weight"] = holdings["prev_value"] / total_prev_value
     holdings["impact_factor"] = holdings["portfolio_contribution"] / holdings["weight"]
-
-    # holdings.reset_index(inplace=True,drop=True)
-
-    # print(holdings[['tradingsymbol', 'daily_return', 'change_value']])
-    # print(holdings[['tradingsymbol', 'portfolio_contribution']].sort_values('portfolio_contribution', ascending=False))
-    # print(holdings[['tradingsymbol','impact_factor']])
-    # print(f"\n📦 Portfolio 1-Day Return: {portfolio_return:.2%}")
 
     return holdings
 
@@ -173,13 +165,9 @@ def get_sector_return(holdings):
     )
     sector_returns = sector_returns.reset_index()
     sector_returns = sector_returns.sort_values("sector_return", ascending=False)
-    sector_returns = sector_returns[['sector','sector_return']]
-    # print("\n📊 Sector-wise Performance:")
-    # print(sector_returns[['sector_return']].sort_values('sector_return', ascending=False))
+    sector_returns = sector_returns[["sector", "sector_return"]]
 
     return holdings, sector_returns
-
-
 
 
 def benchmarking(holdings):
@@ -193,21 +181,13 @@ def benchmarking(holdings):
     total_prev_value = holdings["prev_value"].sum()
     portfolio_return = holdings["change_value"].sum() / total_prev_value
 
-    # if portfolio_return > nifty_return:
-    #     print("You beat NIFTY today")
-    # else:
-    #     print("You lost to NIFTY today")
-
-    # print(f"Portfolio 1D Return: {portfolio_return:.2%}")
-    # print(f"Nifty 1D Return: {nifty_return:.2%}")
 
     return portfolio_return, nifty_return
 
 
-
 def run_snapshot():
-    if os.path.exists('holdings.csv'):
-        holdings = pd.read_csv('holdings.csv')
+    if os.path.exists("holdings.csv"):
+        holdings = pd.read_csv("holdings.csv")
     else:
         holdings = get_portfolio()
     holdings = get_yf_data(holdings)
@@ -216,5 +196,6 @@ def run_snapshot():
     portfolio_return, nifty_return = benchmarking(holdings)
 
     return holdings, sector_returns, portfolio_return, nifty_return
+
 
 run_snapshot()

@@ -5,7 +5,7 @@ from config import RESEND_API_KEY
 from news import get_news
 from bs4 import BeautifulSoup
 from ai_summary import summarize
-
+import traceback
 
 
 def prepare_email_data():
@@ -15,7 +15,7 @@ def prepare_email_data():
     top_gainers = holdings[["tradingsymbol", "day_change_pct"]].nlargest(
         3, "day_change_pct"
     )
-    
+
     top_losers = holdings[["tradingsymbol", "day_change_pct"]].nsmallest(
         3, "day_change_pct"
     )
@@ -43,8 +43,7 @@ def prepare_email_data():
         3, "mtd_return"
     )
 
-
-# Format the email content
+    # Format the email content
     draft_email = f"""
     <html>
     <head>
@@ -267,14 +266,14 @@ def prepare_email_data():
                     <div class="table-container">
                         <h2>🌤️ Top Gainers</h2>
                         <div class="table-wrapper">
-                            { top_gainers.to_html(classes="table", float_format=lambda x: f"{x:.2%}", index=False) }
+                            {top_gainers.to_html(classes="table", float_format=lambda x: f"{x:.2%}", index=False)}
                         </div>
                     </div>
 
                     <div class="table-container">
                         <h2>⛈️ Top Losers</h2>
                         <div class="table-wrapper">
-                            {top_losers.to_html(classes="table", float_format=lambda x: f"{x:.2%}", index=False) }
+                            {top_losers.to_html(classes="table", float_format=lambda x: f"{x:.2%}", index=False)}
                         </div>
                     </div>
                 </div>
@@ -340,21 +339,17 @@ def prepare_email_data():
     return email_content, subject
 
 
-def get_ai_summary(draft_email,news):
+def get_ai_summary(draft_email, news):
     soup = BeautifulSoup(draft_email, "html.parser")
     text = soup.get_text()
     text = text + "\n\nLatest News:\n" + news
     return summarize(text)
 
 
-
-
 def run_email():
-
     email_content, subject = prepare_email_data()
     # Send email using Resend
     resend.api_key = RESEND_API_KEY
-
 
     resend.Emails.send(
         {
@@ -365,4 +360,10 @@ def run_email():
         }
     )
 
-run_email()
+
+if __name__ == "__main__":
+    try:
+        run_email()
+    except Exception as e:
+        print("Exception occurred:",e)
+        traceback.print_exc()
