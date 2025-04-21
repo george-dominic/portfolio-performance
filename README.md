@@ -1,6 +1,6 @@
 # 📈 Daily Portfolio Insights
 
-A lightweight, automated analytics pipeline to track and understand your equity portfolio (Zerodha/Kite) with performance metrics, MTD analysis, and smart summaries.
+A lightweight, automated analytics pipeline to track and understand your equity portfolio (Zerodha/Kite) with performance metrics, MTD analysis, and llm-powered summaries with news baked in.
 
 ---
 
