@@ -1,6 +1,6 @@
 # 📈 Daily Portfolio Insights
 
-A lightweight, automated analytics pipeline to track and understand your equity portfolio (Zerodha/Kite) with performance metrics, attribution analysis, and smart summaries.
+A lightweight, automated analytics pipeline to track and understand your equity portfolio (Zerodha/Kite) with performance metrics, MTD analysis, and llm-powered summaries with news baked in.
 
 ---
 
@@ -47,13 +47,14 @@ A lightweight, automated analytics pipeline to track and understand your equity 
    - download from [https://ollama.com](https://ollama.com)
 
 3. **Download an LLM (LLaMA 3.2)**  
-   - Example:
      ```bash
      ollama run llama3.2
      ```
 
 4. **Your Own Domain**  
    - Create Resend account and set up your domain.
+
+---
 
 ## 🚀 Setup
 
@@ -79,4 +80,7 @@ A lightweight, automated analytics pipeline to track and understand your equity 
     ```
     python prep_email.py
     ```
- 
+---
+
+## 📤 Output (Email)
+<img width="1624" alt="Screenshot 2025-04-21 at 23 03 23" src="https://github.com/user-attachments/assets/81f80d34-262a-454a-8670-dcd7dd5ecbbc" />
