@@ -2,7 +2,7 @@ import ollama
 
 
 def summarize(text):
-    client = ollama.Client()
+    client = ollama.Client(host='http://host.docker.internal:11434')
 
     model = "llama3.2"
 

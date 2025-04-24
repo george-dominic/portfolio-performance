@@ -4,6 +4,7 @@
 # Token data
 token_data.json
 holdings.csv
+auto_perf_run.sh
 
 # Python
 __pycache__/
