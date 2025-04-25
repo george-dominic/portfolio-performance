@@ -37,8 +37,7 @@ jobs:
         uses: ai-action/ollama-action@v1
         with:
           model: llama3.2
-          prompt: |
-          ${{ env.PROMPT_OUTPUT  }}
+          prompt: ${{ env.PROMPT_OUTPUT  }}
 
       - name: Send email using LLM response
         env:
