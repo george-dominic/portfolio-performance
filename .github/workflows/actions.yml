@@ -1,4 +1,4 @@
-name: run main.py
+name: portfolio-performance
 
 on:
   schedule:
