@@ -29,14 +29,15 @@ jobs:
           MARKETAUX_API_KEY: ${{ secrets.MARKETAUX_API_KEY }}
         run: |
           python prep_prompt_action.py
-          echo "prompt_output=$(<prompt.txt)" >> $GITHUB_OUTPUT
+          echo "PROMPT_OUTPUT=$(<prompt.txt)" >> $GITHUB_ENV
 
       - name: Run Ollama with prompt
         id: ollama
         uses: ai-action/ollama-action@v1
         with:
           model: llama3.2
-          prompt: ${{ steps.generate_prompt.outputs.prompt_output }}
+          prompt: |
+          ${{ env.PROMPT_OUTPUT  }}
 
       - name: Send email using LLM response
         env:
