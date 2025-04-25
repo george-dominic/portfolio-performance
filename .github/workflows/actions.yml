@@ -2,7 +2,7 @@ name: portfolio-performance
 
 on:
   schedule:
-    - cron: '0 21 * * 1-5'
+    - cron: '7 21 * * *'
 
 jobs:
   build:
