@@ -199,13 +199,9 @@ def run_snapshot():
     else:
         holdings = get_portfolio()
         
-    print('hey')
     holdings = get_yf_data(holdings)
     holdings = calculate_portfolio_return(holdings)
     holdings, sector_returns = get_sector_return(holdings)
     portfolio_return, nifty_return = benchmarking(holdings)
 
     return holdings, sector_returns, portfolio_return, nifty_return
-
-
-run_snapshot()
