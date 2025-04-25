@@ -30,7 +30,12 @@ jobs:
           MARKETAUX_API_KEY: ${{ secrets.MARKETAUX_API_KEY }}
         run: |
           python prep_prompt_action.py
-          echo "PROMPT_OUTPUT=$(<prompt.txt)" >> $GITHUB_ENV
+          echo "PROMPT_OUTPUT<<EOM" >> $GITHUB_ENV
+          # Append the entire content of prompt.txt to GITHUB_ENV
+          # Make sure the delimiter 'EOM' does not appear in your prompt.txt
+          cat prompt.txt >> $GITHUB_ENV
+          # Write the closing delimiter to GITHUB_ENV
+          echo "EOM" >> $GITHUB_ENV
 
       - name: Run Ollama with prompt
         id: ollama
