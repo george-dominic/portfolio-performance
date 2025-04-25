@@ -30,12 +30,11 @@ jobs:
         run: |
           python prep_prompt_action.py
           echo "PROMPT_OUTPUT<<END_OF_PROMPT_XYZ123ABC" >> $GITHUB_ENV
-          # Append the entire content of prompt.txt to GITHUB_ENV
-          # Make sure the delimiter 'EOM' does not appear in your prompt.txt
           cat prompt.txt >> $GITHUB_ENV
-          # Write the closing delimiter to GITHUB_ENV
+          echo "" >> $GITHUB_ENV # Add extra newline for safety
+          # Use the same unique closing delimiter
           echo "END_OF_PROMPT_XYZ123ABC" >> $GITHUB_ENV
-
+          
       - name: Run Ollama with prompt
         id: ollama
         uses: ai-action/ollama-action@v1
