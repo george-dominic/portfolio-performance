@@ -145,7 +145,8 @@ def get_ai_prompt(draft_email, news):
     4. Notable sector performance
     5. Any significant impact factors
     
-    Keep the summary under 120 words and maintain a casual, witty tone. Just respond with summary and nothing else"""
+    Keep the summary under 120 words and maintain a casual, witty tone. Just respond with summary and nothing else
+    """
     return prompt
 
 if __name__ == "__main__":
