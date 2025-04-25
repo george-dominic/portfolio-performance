@@ -1,7 +1,8 @@
 name: portfolio-performance
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '25 22 * * *'
 
 jobs:
   build:
