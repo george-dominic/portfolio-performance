@@ -135,7 +135,18 @@ def get_ai_prompt(draft_email, news):
     soup = BeautifulSoup(draft_email, "html.parser")
     text = soup.get_text()
     text = text + "\n\nLatest News:\n" + news
-    return text
+    prompt = f"""Analyze this portfolio snapshot and provide a concise summary highlighting key points:
+    {text}
+    
+    Focus on:
+    1. Highlight and summarise notable news
+    2. Overall portfolio performance vs NIFTY
+    3. Key contributors to gains/losses
+    4. Notable sector performance
+    5. Any significant impact factors
+    
+    Keep the summary under 120 words and maintain a casual, witty tone. Just respond with summary and nothing else"""
+    return prompt
 
 if __name__ == "__main__":
     prepare_prompt_data()
