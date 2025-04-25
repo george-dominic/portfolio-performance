@@ -125,9 +125,14 @@ def prepare_prompt_data():
     """
 
     prompt = get_ai_prompt(draft_email,news)
+    prompt = prompt.replace("'", "'\\''")
 
     with open('prompt.txt', 'w') as f:
         f.write(prompt)
+
+    if not prompt.endswith('\n'):
+        with open('prompt.txt', 'a') as f:
+            f.write('\n')
 
     return None
 
