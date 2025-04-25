@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Ollama with prompt
         id: ollama
-        uses: ollama/ollama-action@v1
+        uses: ai-action/ollama-action@v1
         with:
           model: llama3.2
           prompt: ${{ steps.generate_prompt.outputs.prompt_output }}
