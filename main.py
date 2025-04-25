@@ -2,11 +2,12 @@ import pandas as pd
 from kiteconnect import KiteConnect
 import yfinance as yf
 import webbrowser
-from config import KITE_API_KEY, KITE_API_SECRET
+from config import KITE_API_KEY, KITE_API_SECRET, SUPABASE_URL, SUPABASE_KEY
 from auth_handler import setup_auth_server
 from token_manager import save_token, get_token, is_token_valid
 import warnings
 import os
+from supabase import create_client, Client
 
 warnings.filterwarnings("ignore")
 
@@ -186,10 +187,19 @@ def benchmarking(holdings):
 
 
 def run_snapshot():
-    if os.path.exists("holdings.csv"):
-        holdings = pd.read_csv("holdings.csv")
+    holdings_exist = True
+    if holdings_exist:
+        # holdings = pd.read_csv("holdings.csv")
+        supabase : Client = create_client(SUPABASE_URL,SUPABASE_KEY)
+        response = ( supabase.table("kite-holdings")
+                        .select("*")
+                        .execute()
+                    )
+        holdings = pd.DataFrame(response.data)
     else:
         holdings = get_portfolio()
+        
+    print('hey')
     holdings = get_yf_data(holdings)
     holdings = calculate_portfolio_return(holdings)
     holdings, sector_returns = get_sector_return(holdings)

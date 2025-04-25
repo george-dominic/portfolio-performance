@@ -42,95 +42,15 @@ def prepare_email_data():
         3, "mtd_return"
     )
 
-    # Format the email content
-    draft_email = f"""
-    <html>
-    <head>
-    </head>
-    <body>
-        <div class="container">
-            <h1>📂 Portfolio Snapshot</h1>
-            
-            <div class="overview-box">
-                <h2>🥊 Overview</h2>
-                <p>Portfolio 1-Day Return: <span class="{"positive" if portfolio_return >= 0 else "negative"}">{portfolio_return:.2%}</span></p>
-                <p>Nifty 1-Day Return: <span class="{"positive" if nifty_return >= 0 else "negative"}">{nifty_return:.2%}</span></p>
-                <p>Total Value Change: ₹{holdings["change_value"].sum():,.2f}</p>
-            </div>
-            
-            <div class="table-container">
-                <h2>🌤️ Top Gainers</h2>
-                <div class="table-wrapper">
-                    {top_gainers.to_html(classes="table", float_format=lambda x: f"{x:.2%}", index=False)}
-                </div>
-            </div>
-            
-            <div class="table-container">
-                <h2>⛈️ Top Losers</h2>
-                <div class="table-wrapper">
-                    {top_losers.to_html(classes="table", float_format=lambda x: f"{x:.2%}", index=False)}
-                </div>
-            </div>
-
-            <div class="table-container">
-                <h2>💰 Made me money</h2>
-                <div class="table-wrapper">
-                    {top_gainers_money.to_html(classes="table", float_format=lambda x: f"₹{x:.2f}", index=False)}
-                </div>
-            </div>
-            
-            <div class="table-container">
-                <h2>📉 Lost me money</h2>
-                <div class="table-wrapper">
-                    {top_losers_money.to_html(classes="table", float_format=lambda x: f"₹{x:.2f}", index=False)}
-                </div>
-            </div>
-
-            <div class="table-container">
-                <h2>🙂‍↕️ Month-to-Date winners</h2>
-                <div class="table-wrapper">
-                    {top_mtd_returns.to_html(classes="table", float_format=lambda x: f"{x:.2%}", index=False)}
-                </div>
-            </div>
-            
-            <div class="table-container">
-                <h2>🫣 Month-to-Date losers</h2>
-                <div class="table-wrapper">
-                    {top_mtd_returns.to_html(classes="table", float_format=lambda x: f"{x:.2%}", index=False)}
-                </div>
-            </div>
-            
-            <div class="table-container">
-                <h2>💪 Heavy hitters</h2>
-                <div class="table-wrapper">
-                    {top_contributors.to_html(classes="table", float_format=lambda x: f"{x:.2%}", index=False)}
-                </div>
-            </div>
-            
-            <div class="table-container">
-                <h2>⚡ Top Impact Factors</h2>
-                <div class="table-wrapper">
-                    {top_impact_factor.to_html(classes="table", float_format=lambda x: f"{x:.2f}x", index=False)}
-                </div>
-            </div>
-            
-            <div class="table-container">
-                <h2>🏭 Top Sectors</h2>
-                <div class="table-wrapper">
-                    {sector_returns.to_html(classes="table", float_format=lambda x: f"{x:.2%}" if isinstance(x, float) else x, index=False)}
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-    """
-
     if portfolio_return > nifty_return:
         subject = f"💃 You beat NIFTY today - {dt.date.today().strftime('%d-%m-%Y')}"
     else:
         subject = f"🥲 You lost to NIFTY today - {dt.date.today().strftime('%d-%m-%Y')}"
 
-    summary = get_ai_summary(draft_email, news)
+    # summary = get_ai_summary(draft_email, news)
+    with open('response.txt', 'r') as file:
+        summary = file.read()
+    
     summary = summary.strip('"')
 
     email_content = f"""
@@ -334,13 +254,6 @@ def prepare_email_data():
     """
 
     return email_content, subject
-
-
-def get_ai_summary(draft_email, news):
-    soup = BeautifulSoup(draft_email, "html.parser")
-    text = soup.get_text()
-    text = text + "\n\nLatest News:\n" + news
-    return summarize(text)
 
 
 def run_email():
