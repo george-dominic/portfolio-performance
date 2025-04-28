@@ -52,5 +52,12 @@ jobs:
           TO_EMAIL: ${{ secrets.TO_EMAIL }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: |
-          echo "${{ steps.ollama.outputs.response }}" > response.txt
+          OLLAMA_RESPONSE="${{ steps.ollama.outputs.response }}"
+
+          # Set this response content as a multi-line environment variable
+          # for the next step (prep_email_action.py)
+          echo "OLLAMA_RESPONSE<<EOTEXT" >> $GITHUB_ENV
+          # Using printf "%s" is often safer than echo for arbitrary string content
+          printf "%s" "$OLLAMA_RESPONSE" >> $GITHUB_ENV
+          echo "EOTEXT" >> $GITHUB_ENV
           python prep_email_action.py

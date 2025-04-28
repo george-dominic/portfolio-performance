@@ -6,6 +6,7 @@ from news import get_news
 from bs4 import BeautifulSoup
 from ai_summary import summarize
 import traceback
+import os
 
 def prepare_email_data():
     holdings, sector_returns, portfolio_return, nifty_return = run_snapshot()
@@ -48,10 +49,13 @@ def prepare_email_data():
         subject = f"🥲 You lost to NIFTY today - {dt.date.today().strftime('%d-%m-%Y')}"
 
     # summary = get_ai_summary(draft_email, news)
-    with open('response.txt', 'r') as file:
-        summary = file.read()
+    summary = os.environ.get('OLLAMA_RESPONSE')
     
     summary = summary.strip('"')
+
+    if summary is None:
+        print("Error: OLLAMA_RESPONSE environment variable not found.")
+        exit(1)
 
     email_content = f"""
     <html>
