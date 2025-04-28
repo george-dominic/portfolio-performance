@@ -1,6 +1,7 @@
 name: portfolio-performance
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '30 10 * * 1-5'
 
