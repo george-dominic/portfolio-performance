@@ -46,6 +46,7 @@ jobs:
 
       - name: Send email using LLM response
         env:
+          OLLAMA_RESPONSE: ${{ steps.ollama.outputs.response }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           MARKETAUX_API_KEY: ${{ secrets.MARKETAUX_API_KEY }}
@@ -53,11 +54,4 @@ jobs:
           TO_EMAIL: ${{ secrets.TO_EMAIL }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: |
-          read -r -d '' OLLAMA_RESPONSE_CONTENT << 'EOF_RESPONSE_DELIMITER'
-            ${{ steps.ollama.outputs.response }}
-          EOF_RESPONSE_DELIMITER
-          echo "OLLAMA_RESPONSE<<EOTEXT" >> $GITHUB_ENV
-          # Using printf "%s" is often safer than echo for arbitrary string content
-          printf "%s" "$OLLAMA_RESPONSE_CONTENT" >> $GITHUB_ENV
-          echo "EOTEXT" >> $GITHUB_ENV
           python prep_email_action.py
