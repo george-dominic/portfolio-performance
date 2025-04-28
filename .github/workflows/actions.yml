@@ -3,7 +3,7 @@ name: portfolio-performance
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 10 * * 1-5'
+    - cron: '30 10 * * 1-5' # Runs at 10:30 AM UTC Monday-Friday
 
 jobs:
   build:
@@ -11,17 +11,35 @@ jobs:
     steps:
 
       - name: checkout repo content
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4 # Recommend updating to a recent version
 
       - name: setup python
-        uses: actions/setup-python@v4
+        id: setup-python # Add an ID here so we can reference its outputs
+        uses: actions/setup-python@v5 # Recommend updating to a recent version
         with:
           python-version: '3.12'
 
+      # --- Add the caching step here ---
+      - name: Cache pip dependencies
+        uses: actions/cache@v4 # Use v4 for the latest features and reliability
+        with:
+          # Path to the pip cache directory on the runner
+          path: ${{ steps.setup-python.outputs.pip-cache }}
+          # Unique key for the cache. Invalidates if OS, Python version, or requirements.txt changes.
+          key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
+          # Optional restore keys to try if the primary key doesn't match exactly
+          restore-keys: |
+            ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-
+            ${{ runner.os }}-python-
+            ${{ runner.os }}-
+      # ---------------------------------
+
       - name: install python packages
         run: |
+          # Use the cached dependencies (or install if cache miss)
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+        # Add env vars here if your install process needs them, otherwise keep them in the steps that use them.
 
       - name: run python and generate prompt
         id: generate_prompt
@@ -34,17 +52,39 @@ jobs:
           echo "PROMPT_OUTPUT<<END_OF_PROMPT_XYZ123ABC" >> $GITHUB_ENV
           cat prompt.txt >> $GITHUB_ENV
           echo "" >> $GITHUB_ENV # Add extra newline for safety
-          # Use the same unique closing delimiter
-          echo "END_OF_PROMPT_XYZ123ABC" >> $GITHUB_ENV
-          
+          echo "END_OF_PROMPT_XYZ123ABC" >> $GITHUB_ENV # Closing delimiter
+
       - name: Run Ollama with prompt
-        id: ollama
+        id: ollama # Keep this ID to reference its output
         uses: ai-action/ollama-action@v1
         with:
           model: llama3.2
           prompt: ${{ env.PROMPT_OUTPUT  }}
+          # Check action docs if there's a specific output name for the response,
+          # 'response' is a common convention.
+
+      # --- Step to capture Ollama response and set as env var ---
+      # This replaces relying on the action writing to response.txt
+      - name: Capture Ollama Response Safely
+        # No need for an ID unless a later step references *this* step's outputs (which are none)
+        run: |
+          # Use read -r -d '' with a here-document to safely capture
+          # the multi-line output from the previous 'ollama' step.
+          # This handles newlines and most special characters within the output.
+          read -r -d '' OLLAMA_RESPONSE_CONTENT << 'EOF_RESPONSE_DELIMITER'
+            ${{ steps.ollama.outputs.response }} # Content of the here-document can be indented
+          EOF_RESPONSE_DELIMITER # <-- THIS LINE MUST HAVE NO LEADING WHITESPACE AT ALL
+
+          # Set this response content as a multi-line environment variable
+          # for the next step (Send email...)
+          echo "OLLAMA_RESPONSE<<EOTEXT" >> $GITHUB_ENV
+          # printf "%s" is safest for printing arbitrary variable content
+          printf "%s" "$OLLAMA_RESPONSE_CONTENT" >> $GITHUB_ENV
+          echo "EOTEXT" >> $GITHUB_ENV
+      # ----------------------------------------------------------
 
       - name: Send email using LLM response
+        # No ID needed unless referenced later
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
@@ -53,11 +93,6 @@ jobs:
           TO_EMAIL: ${{ secrets.TO_EMAIL }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: |
-          read -r -d '' OLLAMA_RESPONSE_CONTENT << 'EOF_RESPONSE_DELIMITER'
-            ${{ steps.ollama.outputs.response }}
-          EOF_RESPONSE_DELIMITER
-          echo "OLLAMA_RESPONSE<<EOTEXT" >> $GITHUB_ENV
-          # Using printf "%s" is often safer than echo for arbitrary string content
-          printf "%s" "$OLLAMA_RESPONSE_CONTENT" >> $GITHUB_ENV
-          echo "EOTEXT" >> $GITHUB_ENV
+          # Your Python script should read OLLAMA_RESPONSE from os.environ
+          # and include the fix to check for None before calling .strip()
           python prep_email_action.py
