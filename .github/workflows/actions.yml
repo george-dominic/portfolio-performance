@@ -1,63 +1,63 @@
 name: portfolio-performance
- 
-  on:
-    workflow_dispatch:
-    schedule:
-     - cron: '30 10 * * 1-5'
- 
-  jobs:
-    build:
-      runs-on: ubuntu-latest
-      steps:
-  
-        - name: checkout repo content
-          uses: actions/checkout@v2
-  
-        - name: setup python
-          uses: actions/setup-python@v4
-          with:
-            python-version: '3.12'
-  
-        - name: install python packages
-          run: |
-            python -m pip install --upgrade pip
-            pip install -r requirements.txt
-  
-        - name: run python and generate prompt
-          id: generate_prompt
-          env:
-            SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-            SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-            MARKETAUX_API_KEY: ${{ secrets.MARKETAUX_API_KEY }}
-          run: |
-            python prep_prompt_action.py
-            echo "PROMPT_OUTPUT<<END_OF_PROMPT_XYZ123ABC" >> $GITHUB_ENV
-            cat prompt.txt >> $GITHUB_ENV
-            echo "" >> $GITHUB_ENV # Add extra newline for safety
-            # Use the same unique closing delimiter
-            echo "END_OF_PROMPT_XYZ123ABC" >> $GITHUB_ENV
-            
-        - name: Run Ollama with prompt
-          id: ollama
-          uses: ai-action/ollama-action@v1
-          with:
-            model: llama3.2
-            prompt: ${{ env.PROMPT_OUTPUT  }}
-  
-        - name: Send email using LLM response
-          env:
-            SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-            SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-            MARKETAUX_API_KEY: ${{ secrets.MARKETAUX_API_KEY }}
-            FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
-            TO_EMAIL: ${{ secrets.TO_EMAIL }}
-            RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          run: |
-            read -r -d '' OLLAMA_RESPONSE_CONTENT << 'EOF_RESPONSE_DELIMITER'
-              ${{ steps.ollama.outputs.response }}
-            EOF_RESPONSE_DELIMITER #no space
-            echo "OLLAMA_RESPONSE<<EOTEXT" >> $GITHUB_ENV
-            # Using printf "%s" is often safer than echo for arbitrary string content
-            printf "%s" "$OLLAMA_RESPONSE_CONTENT" >> $GITHUB_ENV
-            echo "EOTEXT" >> $GITHUB_ENV
-            python prep_email_action.py
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 10 * * 1-5'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: checkout repo content
+        uses: actions/checkout@v2
+
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: install python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: run python and generate prompt
+        id: generate_prompt
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          MARKETAUX_API_KEY: ${{ secrets.MARKETAUX_API_KEY }}
+        run: |
+          python prep_prompt_action.py
+          echo "PROMPT_OUTPUT<<END_OF_PROMPT_XYZ123ABC" >> $GITHUB_ENV
+          cat prompt.txt >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV # Add extra newline for safety
+          # Use the same unique closing delimiter
+          echo "END_OF_PROMPT_XYZ123ABC" >> $GITHUB_ENV
+          
+      - name: Run Ollama with prompt
+        id: ollama
+        uses: ai-action/ollama-action@v1
+        with:
+          model: llama3.2
+          prompt: ${{ env.PROMPT_OUTPUT  }}
+
+      - name: Send email using LLM response
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          MARKETAUX_API_KEY: ${{ secrets.MARKETAUX_API_KEY }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+          TO_EMAIL: ${{ secrets.TO_EMAIL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: |
+          read -r -d '' OLLAMA_RESPONSE_CONTENT << 'EOF_RESPONSE_DELIMITER'
+            ${{ steps.ollama.outputs.response }}
+          EOF_RESPONSE_DELIMITER
+          echo "OLLAMA_RESPONSE<<EOTEXT" >> $GITHUB_ENV
+          # Using printf "%s" is often safer than echo for arbitrary string content
+          printf "%s" "$OLLAMA_RESPONSE_CONTENT" >> $GITHUB_ENV
+          echo "EOTEXT" >> $GITHUB_ENV
+          python prep_email_action.py
