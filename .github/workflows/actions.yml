@@ -54,7 +54,7 @@ jobs:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: |
           read -r -d '' OLLAMA_RESPONSE_CONTENT << 'EOF_RESPONSE_DELIMITER'
-          ${{ steps.ollama.outputs.response }}
+            ${{ steps.ollama.outputs.response }}
           EOF_RESPONSE_DELIMITER
           echo "OLLAMA_RESPONSE<<EOTEXT" >> $GITHUB_ENV
           # Using printf "%s" is often safer than echo for arbitrary string content

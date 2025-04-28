@@ -50,12 +50,12 @@ def prepare_email_data():
 
     # summary = get_ai_summary(draft_email, news)
     summary = os.environ.get('OLLAMA_RESPONSE')
-    
-    summary = summary.strip('"')
 
     if summary is None:
         print("Error: OLLAMA_RESPONSE environment variable not found.")
         exit(1)
+
+    summary = summary.strip('"')
 
     email_content = f"""
     <html>
