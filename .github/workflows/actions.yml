@@ -11,10 +11,10 @@ jobs:
     steps:
 
       - name: checkout repo content
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -39,7 +39,7 @@ jobs:
           
       - name: Run Ollama with prompt
         id: ollama
-        uses: ai-action/ollama-action@v1
+        uses: ai-action/ollama-action@v1.1.1
         with:
           model: llama3.2
           prompt: ${{ env.PROMPT_OUTPUT  }}
