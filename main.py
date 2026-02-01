@@ -71,9 +71,10 @@ def get_yf_data(holdings):
     day_changes = []
     mtd_returns = []
     day_changes_pct = []
+    valid_indices = []  # Track indices with valid data
 
     # Iterate through each trading symbol
-    for symbol in holdings["tradingsymbol"]:
+    for i, symbol in enumerate(holdings["tradingsymbol"]):
         try:
             # Add .NS for NSE stocks
             ticker = yf.Ticker(f"{symbol}.NS")
@@ -95,14 +96,16 @@ def get_yf_data(holdings):
                 day_changes.append(day_change)
                 day_changes_pct.append(day_change_pct)
                 mtd_returns.append(mtd_return)
+                valid_indices.append(i)
             else:
+                print(f"Warning: Not enough data for {symbol}, skipping...")
                 close_prices.append(None)
                 day_changes.append(None)
                 day_changes_pct.append(None)
                 mtd_returns.append(None)
 
         except Exception as e:
-            print(f"Error getting data for {symbol}: {str(e)}")
+            print(f"Error getting data for {symbol}: {str(e)}, skipping...")
             close_prices.append(None)
             day_changes.append(None)
             mtd_returns.append(None)
@@ -113,6 +116,12 @@ def get_yf_data(holdings):
     holdings["day_change"] = day_changes
     holdings["mtd_return"] = mtd_returns
     holdings["day_change_pct"] = day_changes_pct
+
+    # Filter out rows with missing data
+    holdings = holdings.dropna(subset=["close_price", "day_change", "mtd_return"])
+    
+    if len(holdings) == 0:
+        raise ValueError("No valid stock data found. All symbols may be delisted or unavailable.")
 
     return holdings
 
@@ -173,15 +182,22 @@ def get_sector_return(holdings):
 
 def benchmarking(holdings):
     # Nifty index comparison for the day
-    nifty_ticker = yf.Ticker("^NSEI")  # Nifty index symbol
-    nifty_data = nifty_ticker.history(period="1d")
-    nifty_return = (nifty_data["Close"][0] - nifty_data["Open"][0]) / nifty_data[
-        "Open"
-    ][0]
+    try:
+        nifty_ticker = yf.Ticker("^NSEI")  # Nifty index symbol
+        nifty_data = nifty_ticker.history(period="1d")
+        
+        if nifty_data.empty:
+            print("Warning: No Nifty data available, using 0 return")
+            nifty_return = 0.0
+        else:
+            # Use iloc for positional access to avoid DatetimeIndex issues
+            nifty_return = (nifty_data["Close"].iloc[-1] - nifty_data["Open"].iloc[-1]) / nifty_data["Open"].iloc[-1]
+    except Exception as e:
+        print(f"Warning: Error getting Nifty data: {str(e)}, using 0 return")
+        nifty_return = 0.0
 
     total_prev_value = holdings["prev_value"].sum()
     portfolio_return = holdings["change_value"].sum() / total_prev_value
-
 
     return portfolio_return, nifty_return
 
