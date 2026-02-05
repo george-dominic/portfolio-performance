@@ -233,7 +233,7 @@ def prepare_email_data():
             </div>
             
             <div class="footer">
-                Generated {datetime.now().strftime('%d %b %Y')}
+                Generated {dt.datetime.now().strftime('%d %b %Y')}
             </div>
         </div>
     </body>
