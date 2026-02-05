@@ -80,6 +80,9 @@ def prepare_email_data():
                 td {{ border-bottom-color: #334155; }}
                 .section {{ border-bottom-color: #334155; }}
                 .footer {{ color: #64748b; }}
+                .ai-summary {{ background: #0f172a; border-bottom-color: #334155; }}
+                .overview {{ background: #334155; border-bottom-color: #334155; }}
+                .stat {{ background: #1e293b; }}
             }}
             .container {{ 
                 max-width: 500px; 
@@ -103,9 +106,6 @@ def prepare_email_data():
                 background: #f8fafc;
                 border-bottom: 1px solid #f1f5f9;
             }}
-            @media (prefers-color-scheme: dark) {{
-                .ai-summary {{ background: #0f172a; border-bottom-color: #334155; }}
-            }}
             .ai-summary h2 {{ font-size: 14px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }}
             .ai-summary p {{ font-size: 14px; line-height: 1.5; }}
             
@@ -116,34 +116,16 @@ def prepare_email_data():
                 background: #e2e8f0;
                 border-bottom: 1px solid #e2e8f0;
             }}
-            @media (prefers-color-scheme: dark) {{
-                .overview {{ background: #334155; border-bottom-color: #334155; }}
-            }}
             .stat {{ background: white; padding: 20px 12px; text-align: center; }}
-            @media (prefers-color-scheme: dark) {{
-                .stat {{ background: #1e293b; }}
-            }}
             .stat-value {{ font-size: 22px; font-weight: 700; color: #1e293b; }}
-            @media (prefers-color-scheme: dark) {{
-                .stat-value {{ color: #f1f5f9; }}
-            }}
             .stat-label {{ font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }}
             
             .section {{ padding: 20px 24px; border-bottom: 1px solid #f1f5f9; }}
-            @media (prefers-color-scheme: dark) {{
-                .section {{ border-bottom-color: #334155; }}
-            }}
             .section h2 {{ font-size: 14px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }}
             
             table {{ width: 100%; border-collapse: collapse; }}
-            th {{ font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 0; border-bottom: 2px solid #f1f5f9; }}
-            @media (prefers-color-scheme: dark) {{
-                th {{ border-bottom-color: #334155; }}
-            }}
-            td {{ padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; }}
-            @media (prefers-color-scheme: dark) {{
-                td {{ border-bottom-color: #334155; }}
-            }}
+            th {{ font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 0; border-bottom: 2px solid #f1f5f9; text-align: left; }}
+            td {{ padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; text-align: left; }}
             tr:last-child td {{ border-bottom: none; }}
             
             .positive {{ color: #16a34a; }}
