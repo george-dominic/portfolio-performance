@@ -84,3 +84,5 @@ A lightweight, automated analytics pipeline to track and understand your equity 
 
 ## 📤 Output (Email)
 <img width="1624" alt="Screenshot 2025-04-21 at 23 03 23" src="https://github.com/user-attachments/assets/81f80d34-262a-454a-8670-dcd7dd5ecbbc" />
+
+<!-- kept active 2026-04-23 -->
