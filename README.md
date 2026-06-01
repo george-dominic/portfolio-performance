@@ -87,3 +87,4 @@ A lightweight, automated analytics pipeline to track and understand your equity 
 
 <!-- kept active 2026-04-23 -->
 <!-- keepalive 2026-05-01 -->
+<!-- keepalive 2026-06-01 -->
